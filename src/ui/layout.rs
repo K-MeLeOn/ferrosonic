@@ -28,7 +28,7 @@ pub fn draw(frame: &mut Frame, state: &mut AppState) {
     let (header_area, cava_area, content_area, now_playing_area, footer_area) = if cava_active {
         let chunks = Layout::vertical([
             Constraint::Length(1),    // Header
-            Constraint::Percentage(40), // Cava visualizer — top half-ish
+            Constraint::Percentage(state.settings_state.cava_size as u16), // Cava visualizer
             Constraint::Min(10),      // Page content
             Constraint::Length(7),    // Now playing
             Constraint::Length(1),    // Footer
@@ -62,10 +62,8 @@ pub fn draw(frame: &mut Frame, state: &mut AppState) {
     // Store layout areas for mouse hit-testing
     state.layout = LayoutAreas {
         header: header_area,
-        cava: cava_area,
         content: content_area,
         now_playing: now_playing_area,
-        footer: footer_area,
         content_left,
         content_right,
     };

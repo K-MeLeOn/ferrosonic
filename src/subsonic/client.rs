@@ -297,76 +297,22 @@ impl SubsonicClient {
         Ok(url.to_string())
     }
 
-    /// Parse song ID from a stream URL
-    ///
-    /// Useful for session restoration
-    pub fn parse_song_id_from_url(url: &str) -> Option<String> {
-        let parsed = Url::parse(url).ok()?;
-        parsed
-            .query_pairs()
-            .find(|(k, _)| k == "id")
-            .map(|(_, v)| v.to_string())
-    }
-
-    /// Get cover art URL for a given cover art ID
-    pub fn get_cover_art_url(&self, cover_art_id: &str) -> Result<String, SubsonicError> {
-        let (salt, token) = generate_auth_params(&self.password);
-        let mut url = Url::parse(&format!("{}/rest/getCoverArt", self.base_url))?;
-
-        url.query_pairs_mut()
-            .append_pair("id", cover_art_id)
-            .append_pair("u", &self.username)
-            .append_pair("t", &token)
-            .append_pair("s", &salt)
-            .append_pair("v", API_VERSION)
-            .append_pair("c", CLIENT_NAME);
-
-        Ok(url.to_string())
-    }
-
-    /// Search for artists, albums, and songs
-    pub async fn search(
-        &self,
-        query: &str,
-    ) -> Result<(Vec<Artist>, Vec<Album>, Vec<Child>), SubsonicError> {
-        let url = self.build_url(&format!("search3?query={}", urlencoding::encode(query)))?;
-        debug!("Searching: {}", query);
-
-        let response = self.http.get(url).send().await?;
-        let text = response.text().await?;
-
-        let parsed: SubsonicResponse<SearchResult3Data> = serde_json::from_str(&text)
-            .map_err(|e| SubsonicError::Parse(format!("Failed to parse search response: {}", e)))?;
-
-        if parsed.subsonic_response.status != "ok" {
-            if let Some(error) = parsed.subsonic_response.error {
-                return Err(SubsonicError::Api {
-                    code: error.code,
-                    message: error.message,
-                });
-            }
-        }
-
-        let result = parsed
-            .subsonic_response
-            .data
-            .ok_or_else(|| SubsonicError::Parse("Empty search data".to_string()))?
-            .search_result3;
-
-        debug!(
-            "Search found {} artists, {} albums, {} songs",
-            result.artist.len(),
-            result.album.len(),
-            result.song.len()
-        );
-
-        Ok((result.artist, result.album, result.song))
-    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    impl SubsonicClient {
+        /// Parse song ID from a stream URL
+        fn parse_song_id_from_url(url: &str) -> Option<String> {
+            let parsed = Url::parse(url).ok()?;
+            parsed
+                .query_pairs()
+                .find(|(k, _)| k == "id")
+                .map(|(_, v)| v.to_string())
+        }
+    }
 
     #[test]
     fn test_parse_song_id() {

@@ -12,6 +12,7 @@ pub struct SubsonicResponse<T> {
 #[derive(Debug, Deserialize)]
 pub struct SubsonicResponseInner<T> {
     pub status: String,
+    #[allow(dead_code)] // Present in API response, needed for deserialization
     pub version: String,
     #[serde(default)]
     pub error: Option<ApiError>,
@@ -40,6 +41,7 @@ pub struct ArtistsIndex {
 
 #[derive(Debug, Deserialize)]
 pub struct ArtistIndex {
+    #[allow(dead_code)] // Present in API response, needed for deserialization
     pub name: String,
     #[serde(default)]
     pub artist: Vec<Artist>,
@@ -217,19 +219,3 @@ pub struct PlaylistDetail {
 #[derive(Debug, Deserialize)]
 pub struct PingData {}
 
-/// Search result
-#[derive(Debug, Deserialize)]
-pub struct SearchResult3Data {
-    #[serde(rename = "searchResult3")]
-    pub search_result3: SearchResult3,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct SearchResult3 {
-    #[serde(default)]
-    pub artist: Vec<Artist>,
-    #[serde(default)]
-    pub album: Vec<Album>,
-    #[serde(default)]
-    pub song: Vec<Child>,
-}

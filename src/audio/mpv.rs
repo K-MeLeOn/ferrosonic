@@ -32,35 +32,15 @@ struct MpvResponse {
     error: String,
 }
 
-/// MPV event
+/// MPV event (used for deserialization and debug tracing)
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)] // Fields populated by deserialization, read via Debug
 struct MpvEvent {
     event: String,
     #[serde(default)]
     name: Option<String>,
     #[serde(default)]
     data: Option<Value>,
-}
-
-/// Events emitted by MPV
-#[derive(Debug, Clone)]
-pub enum MpvEvent2 {
-    /// Track reached end of file
-    EndFile,
-    /// Playback paused
-    Pause,
-    /// Playback resumed
-    Unpause,
-    /// Position changed (time in seconds)
-    TimePos(f64),
-    /// Audio properties changed
-    AudioProperties {
-        sample_rate: Option<u32>,
-        bit_depth: Option<u32>,
-        format: Option<String>,
-    },
-    /// MPV shut down
-    Shutdown,
 }
 
 /// MPV controller
@@ -217,13 +197,6 @@ impl MpvController {
         Ok(())
     }
 
-    /// Clear the playlist except current track
-    pub fn playlist_clear(&mut self) -> Result<(), AudioError> {
-        debug!("Clearing playlist");
-        self.send_command(vec![json!("playlist-clear")])?;
-        Ok(())
-    }
-
     /// Remove a specific entry from the playlist by index
     pub fn playlist_remove(&mut self, index: usize) -> Result<(), AudioError> {
         debug!("Removing playlist entry {}", index);
@@ -307,15 +280,6 @@ impl MpvController {
         Ok(data.and_then(|v| v.as_f64()).unwrap_or(0.0))
     }
 
-    /// Get volume (0-100)
-    pub fn get_volume(&mut self) -> Result<i32, AudioError> {
-        let data = self.send_command(vec![json!("get_property"), json!("volume")])?;
-        Ok(data
-            .and_then(|v| v.as_f64())
-            .map(|v| v as i32)
-            .unwrap_or(100))
-    }
-
     /// Set volume (0-100)
     pub fn set_volume(&mut self, volume: i32) -> Result<(), AudioError> {
         debug!("Setting volume to {}", volume);
@@ -378,22 +342,10 @@ impl MpvController {
         }))
     }
 
-    /// Get current filename/URL
-    pub fn get_path(&mut self) -> Result<Option<String>, AudioError> {
-        let data = self.send_command(vec![json!("get_property"), json!("path")])?;
-        Ok(data.and_then(|v| v.as_str().map(String::from)))
-    }
-
     /// Check if anything is loaded
     pub fn is_idle(&mut self) -> Result<bool, AudioError> {
         let data = self.send_command(vec![json!("get_property"), json!("idle-active")])?;
         Ok(data.and_then(|v| v.as_bool()).unwrap_or(true))
-    }
-
-    /// Check if current file has reached EOF
-    pub fn is_eof(&mut self) -> Result<bool, AudioError> {
-        let data = self.send_command(vec![json!("get_property"), json!("eof-reached")])?;
-        Ok(data.and_then(|v| v.as_bool()).unwrap_or(false))
     }
 
     /// Quit MPV
@@ -414,11 +366,6 @@ impl MpvController {
         Ok(())
     }
 
-    /// Observe a property for changes
-    pub fn observe_property(&mut self, id: u64, name: &str) -> Result<(), AudioError> {
-        self.send_command(vec![json!("observe_property"), json!(id), json!(name)])?;
-        Ok(())
-    }
 }
 
 impl Drop for MpvController {

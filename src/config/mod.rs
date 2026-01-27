@@ -30,9 +30,17 @@ pub struct Config {
     /// Enable cava audio visualizer
     #[serde(rename = "Cava", default)]
     pub cava: bool,
+
+    /// Cava visualizer height percentage (10-80, step 5)
+    #[serde(rename = "CavaSize", default = "Config::default_cava_size")]
+    pub cava_size: u8,
 }
 
 impl Config {
+    fn default_cava_size() -> u8 {
+        40
+    }
+
     /// Create a new empty config
     pub fn new() -> Self {
         Self::default()

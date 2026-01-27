@@ -5,9 +5,6 @@ use tracing::{debug, error, info};
 
 use crate::error::AudioError;
 
-/// Default audio device ID for PipeWire
-const DEFAULT_DEVICE_ID: u32 = 0;
-
 /// PipeWire sample rate controller
 pub struct PipeWireController {
     /// Original sample rate before ferrosonic started
@@ -133,47 +130,6 @@ impl PipeWireController {
         Ok(())
     }
 
-    /// Check if PipeWire is available
-    pub fn is_available() -> bool {
-        Command::new("pw-metadata")
-            .arg("--version")
-            .output()
-            .map(|o| o.status.success())
-            .unwrap_or(false)
-    }
-
-    /// Get the effective sample rate (from pw-metadata or system default)
-    pub fn get_effective_rate() -> Option<u32> {
-        // Try to get from PipeWire
-        let output = Command::new("pw-metadata")
-            .arg("-n")
-            .arg("settings")
-            .output()
-            .ok()?;
-
-        let stdout = String::from_utf8_lossy(&output.stdout);
-
-        // Look for clock.rate or clock.force-rate
-        for line in stdout.lines() {
-            if (line.contains("clock.rate") || line.contains("clock.force-rate"))
-                && line.contains("value:")
-            {
-                if let Some(start) = line.find("value:'") {
-                    let rest = &line[start + 7..];
-                    if let Some(end) = rest.find('\'') {
-                        let rate_str = &rest[..end];
-                        if let Ok(rate) = rate_str.parse::<u32>() {
-                            if rate > 0 {
-                                return Some(rate);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        None
-    }
 }
 
 impl Default for PipeWireController {
@@ -190,13 +146,3 @@ impl Drop for PipeWireController {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_is_available() {
-        // This test just checks the function doesn't panic
-        let _ = PipeWireController::is_available();
-    }
-}

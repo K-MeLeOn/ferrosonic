@@ -32,16 +32,6 @@ impl Page {
         }
     }
 
-    pub fn from_index(index: usize) -> Self {
-        match index {
-            0 => Page::Artists,
-            1 => Page::Queue,
-            2 => Page::Playlists,
-            3 => Page::Server,
-            4 => Page::Settings,
-            _ => Page::Artists,
-        }
-    }
 
     pub fn label(&self) -> &'static str {
         match self {
@@ -205,6 +195,8 @@ pub struct SettingsState {
     pub theme_index: usize,
     /// Cava visualizer enabled
     pub cava_enabled: bool,
+    /// Cava visualizer height percentage (10-80, step 5)
+    pub cava_size: u8,
 }
 
 impl Default for SettingsState {
@@ -214,6 +206,7 @@ impl Default for SettingsState {
             themes: vec![ThemeData::default_theme()],
             theme_index: 0,
             cava_enabled: false,
+            cava_size: 40,
         }
     }
 }
@@ -269,10 +262,8 @@ pub struct Notification {
 #[derive(Debug, Clone, Default)]
 pub struct LayoutAreas {
     pub header: Rect,
-    pub cava: Option<Rect>,
     pub content: Rect,
     pub now_playing: Rect,
-    pub footer: Rect,
     /// Left pane for dual-pane pages (Artists tree, Playlists list)
     pub content_left: Option<Rect>,
     /// Right pane for dual-pane pages (Songs list)
@@ -349,6 +340,7 @@ impl AppState {
         state.server_state.password = config.password.clone();
         // Initialize cava from config
         state.settings_state.cava_enabled = config.cava;
+        state.settings_state.cava_size = config.cava_size.clamp(10, 80);
         state
     }
 

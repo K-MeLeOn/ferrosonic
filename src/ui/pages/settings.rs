@@ -34,6 +34,8 @@ pub fn render(frame: &mut Frame, area: Rect, state: &AppState) {
         Constraint::Length(2), // Theme selector
         Constraint::Length(1), // Spacing
         Constraint::Length(2), // Cava toggle
+        Constraint::Length(1), // Spacing
+        Constraint::Length(2), // Cava size
         Constraint::Min(1),    // Remaining space
     ])
     .split(inner);
@@ -66,11 +68,29 @@ pub fn render(frame: &mut Frame, area: Rect, state: &AppState) {
         &colors,
     );
 
+    // Cava size (field 2)
+    let cava_size_value = if !state.cava_available {
+        "N/A (cava not found)".to_string()
+    } else {
+        format!("{}%", settings.cava_size)
+    };
+
+    render_option(
+        frame,
+        chunks[5],
+        "Cava Size",
+        &cava_size_value,
+        settings.selected_field == 2,
+        &colors,
+    );
+
     // Help text at bottom
     let help_text = match settings.selected_field {
         0 => "← → or Enter to change theme (auto-saves)",
         1 if state.cava_available => "← → or Enter to toggle cava visualizer (auto-saves)",
         1 => "cava is not installed on this system",
+        2 if state.cava_available => "← → to adjust cava size (10%-80%, auto-saves)",
+        2 => "cava is not installed on this system",
         _ => "",
     };
     let help = Paragraph::new(help_text).style(Style::default().fg(colors.muted));
