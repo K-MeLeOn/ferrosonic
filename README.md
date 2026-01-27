@@ -23,7 +23,7 @@ Ferrosonic is inspired by [Termsonic](https://git.sixfoisneuf.fr/termsonic/about
 
 ## Screenshots
 
-<!-- Add screenshots here -->
+![Ferrosonic](screenshots/ferrosonic.png)
 
 ## Installation
 
