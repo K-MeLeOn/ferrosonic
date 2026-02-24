@@ -45,10 +45,10 @@ impl App {
             KeyCode::Tab => {
                 state.artists.focus = (state.artists.focus + 1) % 2;
             }
-            KeyCode::Left => {
+            KeyCode::Left | KeyCode::Char('h') => {
                 state.artists.focus = 0;
             }
-            KeyCode::Right => {
+            KeyCode::Right | KeyCode::Char('l') => {
                 // Move focus to songs (right pane)
                 if !state.artists.songs.is_empty() {
                     state.artists.focus = 1;
@@ -285,7 +285,7 @@ impl App {
                     state.artists.focus = 0;
                 }
             }
-            KeyCode::Char('e') => {
+            KeyCode::Char('a') => {
                 if state.artists.focus == 1 {
                     if let Some(idx) = state.artists.selected_song {
                         if let Some(song) = state.artists.songs.get(idx).cloned() {
@@ -301,7 +301,7 @@ impl App {
                     state.notify(format!("Added {} songs to queue", count));
                 }
             }
-            KeyCode::Char('n') => {
+            KeyCode::Char('A') => {
                 let insert_pos = state.queue_position.map(|p| p + 1).unwrap_or(0);
                 if state.artists.focus == 1 {
                     if let Some(idx) = state.artists.selected_song {

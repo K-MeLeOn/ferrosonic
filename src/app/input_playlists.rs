@@ -13,10 +13,10 @@ impl App {
             KeyCode::Tab => {
                 state.playlists.focus = (state.playlists.focus + 1) % 2;
             }
-            KeyCode::Left => {
+            KeyCode::Left | KeyCode::Char('h') => {
                 state.playlists.focus = 0;
             }
-            KeyCode::Right => {
+            KeyCode::Right | KeyCode::Char('l') => {
                 if !state.playlists.songs.is_empty() {
                     state.playlists.focus = 1;
                     if state.playlists.selected_song.is_none() {
@@ -114,7 +114,7 @@ impl App {
                     }
                 }
             }
-            KeyCode::Char('e') => {
+            KeyCode::Char('a') => {
                 // Add to queue
                 if state.playlists.focus == 1 {
                     if let Some(idx) = state.playlists.selected_song {
@@ -134,7 +134,7 @@ impl App {
                     }
                 }
             }
-            KeyCode::Char('n') => {
+            KeyCode::Char('A') => {
                 // Add next
                 let insert_pos = state.queue_position.map(|p| p + 1).unwrap_or(0);
                 if state.playlists.focus == 1 {
