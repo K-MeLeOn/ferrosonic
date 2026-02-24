@@ -42,20 +42,21 @@ impl<'a> Footer<'a> {
     fn keybinds(&self) -> Vec<(&'static str, &'static str)> {
         let mut binds = vec![
             ("q", "Quit"),
-            ("p/Space", "Pause"),
-            ("h", "Prev"),
-            ("l", "Next"),
+            ("<space>", "Pause"),
+            ("N/p", "Prev"),
+            ("n", "Next"),
             ("t", "Theme"),
+            ("<ctrl+R>", "Refresh"),
         ];
 
         match self.page {
             Page::Artists => {
                 binds.extend([
                     ("/", "Filter"),
-                    ("←/→", "Focus"),
-                    ("e", "Add"),
-                    ("n", "Add next"),
-                    ("Enter", "Play"),
+                    ("h/l,←/→,<tab>", "Focus"),
+                    ("a", "Add"),
+                    ("A", "Add next"),
+                    ("<enter>", "Play"),
                 ]);
             }
             Page::Queue => {
@@ -64,27 +65,26 @@ impl<'a> Footer<'a> {
                     ("J/K", "Move"),
                     ("r", "Shuffle"),
                     ("c", "Clear history"),
-                    ("Enter", "Play"),
+                    ("<enter>", "Play"),
                 ]);
             }
             Page::Playlists => {
                 binds.extend([
-                    ("←/→", "Focus"),
-                    ("e", "Add"),
-                    ("n", "Add next"),
+                    ("h/l|←/→|<tab>", "Focus"),
+                    ("a", "Add"),
+                    ("A", "Add next"),
                     ("r", "Shuffle play"),
-                    ("Enter", "Play"),
+                    ("<enter>", "Play"),
                 ]);
             }
             Page::Server => {
                 binds.extend([
-                    ("Tab", "Next field"),
-                    ("Enter", "Test/Save"),
-                    ("Ctrl+R", "Refresh"),
+                    ("<tab>", "Next field"),
+                    ("<enter>", "Test/Save"),
                 ]);
             }
             Page::Settings => {
-                binds.extend([("←/→/Enter", "Change theme")]);
+                binds.extend([("←/→,Enter", "Change theme")]);
             }
         }
 

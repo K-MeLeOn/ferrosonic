@@ -38,7 +38,7 @@ impl App {
                     }
                 }
             }
-            KeyCode::Char('d') => {
+            KeyCode::Char('d') | KeyCode::Char('x') => {
                 // Remove selected song
                 if let Some(idx) = state.queue_state.selected {
                     if idx < state.queue.len() {

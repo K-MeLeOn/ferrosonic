@@ -45,11 +45,11 @@ impl Page {
 
     pub fn shortcut(&self) -> &'static str {
         match self {
-            Page::Artists => "F1",
-            Page::Queue => "F2",
-            Page::Playlists => "F3",
-            Page::Server => "F4",
-            Page::Settings => "F5",
+            Page::Artists => "[1]",
+            Page::Queue => "[2]",
+            Page::Playlists => "[3]",
+            Page::Server => "[4]",
+            Page::Settings => "[5]",
         }
     }
 }
