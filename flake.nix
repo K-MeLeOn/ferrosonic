@@ -8,10 +8,10 @@
   in
   {
     packages.${system} = rec {
-      ferrosonic = pkgs.callPackage ./ferrosonic.nix { };
+      ferrosonic = pkgs.callPackage ./ferrosonic.nix { src = self; };
       default = ferrosonic;
     };
 
-    devShells.${system}.default = (import ./shell.nix { inherit pkgs; });
+    devShells.${system}.default = import ./shell.nix { inherit pkgs; };
   };
 }

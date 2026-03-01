@@ -1,6 +1,5 @@
 { lib
 , rustPlatform
-, fetchFromGitHub
 , pkg-config
 , makeWrapper
 , openssl
@@ -8,17 +7,17 @@
 , pipewire
 , wireplumber
 , cava
+, src ? ./.
 }:
 
 rustPlatform.buildRustPackage rec {
   pname = "ferrosonic";
-  version = "0.2.2";
+  version = "dev";
 
-  src = fetchFromGitHub {
-    owner = "jaidaken";
-    repo = "ferrosonic";
-    rev = "v${version}";
-    hash = "sha256-cqmu+PDWKnSHYzV6TOVFwDdHEHjsgalIveEhEK87fi8=";
+  inherit src;
+
+  cargoLock = {
+    lockFile = "${src}/Cargo.lock";
   };
 
   cargoHash = "sha256-vari4D3gHGYOOmVRQaEtmTkhT3E+fTnZgNZSQrnG0bc=";
